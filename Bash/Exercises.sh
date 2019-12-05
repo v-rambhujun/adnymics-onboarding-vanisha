@@ -34,3 +34,4 @@ cat number.txt | awk -F" " '{if ($1 % 777 ==0) {counter+=1}} END {print counter}
 # Print the most command that is used with "sudo" from each user from 
 # log file: /var/log/auth.log. input
 
+grep sudo /var/log/auth.log | awk -F';' '{print($3 "\t" $4)}' | awk -F' ' '{print $1 "\t" $2}' | sed -r '/^\s*$/d' |  awk  '{arr[$1 "\t" $2]++; count++;} END {for (i in arr){ if (counter < arr[i]) {counter = arr[i] }   } ;} END {for (i in arr){ if (counter == arr[i]) {user = i }   } ;} END  {print(user "\t" counter) } END {print("\t" "List of all the users, the commands used and the number of times the commands were used") } END { for (i in arr) print  "(", i, ") => ", arr[i]; }'
