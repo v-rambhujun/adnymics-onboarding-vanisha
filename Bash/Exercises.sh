@@ -45,3 +45,7 @@ curl https://weather.gc.ca/rss/city/on-118_e.xml | grep "<title>" | awk -F">" '{
 # Exercise 9
 # Histogram
 curl https://poloniex.com/chartData/USDT_BTC-1800.json | jq -r '.[] | (.date | tostring) + "\t " + (.quoteVolume | tostring)' | awk '{ print strftime("%k",$1)"\t" $2 }' | awk '{arr[$1]+=$2;} END { for (i in arr) print i, arr[i]/10000}' |  awk '{$2=sprintf("%-*s", $2, ""); gsub(" ", "#", $2); printf("%-10s%s\n", $1, $2 )}'
+
+
+# Doesn't work with volume
+curl https://poloniex.com/chartData/USDT_BTC-1800.json | jq -r '.[] | (.date | tostring) + "\t " + (.quoteVolume | tostring)' | awk '{ print strftime("%k",$1)"\t" $2 }' |  awk '{arr[$1]+=$2; count[$1]+=1;} END { for (i in arr) print i, arr[i]/count[i] }' | awk '{$2=sprintf("%-*s", $2, ""); gsub(" ", "#", $2); printf("%-10s%s\n", $1, $2 )}'
