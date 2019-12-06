@@ -35,3 +35,13 @@ cat number.txt | awk -F" " '{if ($1 % 777 ==0) {counter+=1}} END {print counter}
 # log file: /var/log/auth.log. input
 
 grep sudo /var/log/auth.log | awk -F';' '{print($3 "\t" $4)}' | awk -F' ' '{print $1 "\t" $2}' | sed -r '/^\s*$/d' |  awk  '{arr[$1 "\t" $2]++; count++;} END {for (i in arr){ if (counter < arr[i]) {counter = arr[i] }   } ;} END {for (i in arr){ if (counter == arr[i]) {user = i }   } ;} END  {print(user "\t" counter) }'
+
+#####################################################################
+# Exercise 8
+# Extract temperature value from http://weather.gc.ca/rss/city/on-118_e.xml 
+curl https://weather.gc.ca/rss/city/on-118_e.xml | grep "<title>" | awk -F">" '{print $2}' | awk -F "<" '{print $1}' | awk -F":" '{if ($1 == "Current Conditions"){temp = $2 }} END {print(temp)}' | awk -F'#' '{print($1)}' |grep -Eo '[+-]?[0-9]+([.][0-9]+)?' $1 
+
+#####################################################################
+# Exercise 9
+# Histogram
+curl https://poloniex.com/chartData/USDT_BTC-1800.json | jq -r '.[] | (.date | tostring) + "\t " + (.quoteVolume | tostring)' | awk '{ print strftime("%k",$1)"\t" $2 }' | awk '{arr[$1]+=$2;} END { for (i in arr) print i, arr[i]/10000}' |  awk '{$2=sprintf("%-*s", $2, ""); gsub(" ", "#", $2); printf("%-10s%s\n", $1, $2 )}'
